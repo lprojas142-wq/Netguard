@@ -1,0 +1,15 @@
+LIMIT maxAttempts : int = 5
+LIMIT trafficLimit : float = 500.0
+
+LOAD EVENTS FROM "red_laboratorio.log" AS traffic
+
+FOR EACH event IN traffic
+    LET suspicious : boolean = false
+
+    IF event.failedAttempts >= maxAttempts OR event.trafficMB > trafficLimit
+        suspicious = true
+        ALERT "Evento sospechoso" FROM event.sourceIP
+    ELSE
+        MARK event AS "normal"
+    END
+END

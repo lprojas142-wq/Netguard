@@ -1,0 +1,4 @@
+LOAD EVENTS FROM "../red_laboratorio.log" AS traffic
+FOR EACH event IN traffic
+    x = 3
+END

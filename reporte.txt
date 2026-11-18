@@ -1,0 +1,10 @@
+REPORTE NETGUARD
+Fecha:     2026-11-17 00:28
+Programa:  ejemplos/reglas.ng
+Registro:  D:\NetGuard_Proyecto\NetGuard_Proyecto\NetGuard\ejemplos\red_laboratorio.log
+Código:    optimizado
+------------------------------------------------------------
+[ALERTA]  Evento sospechoso - origen 192.168.1.10
+[ALERTA]  Evento sospechoso - origen 192.168.1.25
+[MARCADO] 10.0.0.4 -> normal
+Eventos analizados: 3 | Alertas: 2 | Marcados: 1

@@ -1,0 +1,22 @@
+# Programa para mostrar TODAS las técnicas de optimización (sección 13)
+LIMIT bigTraffic : float = 500.0 * 2          # plegado de constantes -> 1000.0
+LOAD EVENTS FROM "red_laboratorio2.log" AS traffic
+
+LET factor : float = 1.0
+factor = factor * 1.5                         # factor cambia: ya no es constante
+
+FOR EACH event IN traffic
+    LET umbral : float = factor * 10.0        # invariante: se mueve antes del ciclo
+    LET carga : float = event.trafficMB / 100     # reducción de fuerza: * 0.01
+    LET copia : float = event.trafficMB / 100     # subexpresión común con la anterior
+
+    IF carga + copia > umbral * 1 OR event.failedAttempts * 2 >= 10
+        ALERT "Actividad sospechosa" FROM event.sourceIP
+    ELSE
+        MARK event AS "normal"
+    END
+
+    IF event.trafficMB > bigTraffic            # propagación: bigTraffic -> 1000.0
+        ALERT "Tráfico extremo" FROM event.sourceIP
+    END
+END

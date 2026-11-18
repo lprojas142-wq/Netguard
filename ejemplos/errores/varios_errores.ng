@@ -1,0 +1,10 @@
+# Varios errores semánticos a la vez: el compilador los reporta todos
+LIMIT maxAttempts : int = 5
+LOAD EVENTS FROM "../red_laboratorio.log" AS traffic
+FOR EACH event IN traffic
+    LET n : int = 2.5
+    maxAttempts = 10
+    IF event.port
+        ALERT 123 FROM event.port
+    END
+END

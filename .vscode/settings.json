@@ -1,0 +1,7 @@
+{
+    // Los programas NetGuard (.ng) y los registros (.log) se abren como texto UTF-8
+    "files.associations": { "*.ng": "plaintext" },
+    "files.encoding": "utf8",
+    "terminal.integrated.env.windows": { "PYTHONIOENCODING": "utf-8" },
+    "python.terminal.activateEnvironment": false
+}

@@ -1,0 +1,4 @@
+sourceIP,eventType,port,failedAttempts,trafficMB,status
+192.168.1.10,login_failed,22,7,1.2,pendiente
+192.168.1.25,transfer,443,0,820.5,pendiente
+10.0.0.4,login_ok,22,0,0.4,pendiente

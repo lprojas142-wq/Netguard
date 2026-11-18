@@ -1,0 +1,4 @@
+LOAD EVENTS FROM "no_existe.log" AS traffic
+FOR EACH event IN traffic
+    MARK event AS "normal"
+END

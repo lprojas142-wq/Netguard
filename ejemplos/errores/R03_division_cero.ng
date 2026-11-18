@@ -1,0 +1,7 @@
+LOAD EVENTS FROM "../red_laboratorio.log" AS traffic
+FOR EACH event IN traffic
+    LET promedio : float = event.trafficMB / event.failedAttempts
+    IF promedio > 1.0
+        ALERT "Promedio alto" FROM event.sourceIP
+    END
+END

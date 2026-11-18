@@ -1,0 +1,444 @@
+==============================================================================
+  NETGUARD - GUÍA PASO A PASO PARA EJECUTAR, ENTENDER Y PRESENTAR EL PROYECTO
+  Proyecto Integrador · Lenguajes y Autómatas II · ITO
+==============================================================================
+
+Esta carpeta es la IMPLEMENTACIÓN COMPLETA del diseño que está en el documento
+"NetGuard_Fases1y2_Proyecto_Integrador.docx" (secciones 7 a 14). Cada parte del
+documento tiene su archivo de código, y el programa reproduce EXACTAMENTE las
+tablas del documento (17 cuádruplas, 13 optimizadas, mismo reporte final).
+
+ÍNDICE
+  Paso 1. Qué hay en la carpeta (y qué sección del documento implementa)
+  Paso 2. Instalar Python
+  Paso 3. Abrir una terminal en la carpeta
+  Paso 3B. Abrir y ejecutar desde Visual Studio Code
+  Paso 4. Correr las pruebas automáticas
+  Paso 5. Ejecutar el primer programa
+  Paso 6. Ver cada fase del compilador
+  Paso 7. Mostrar los errores que detecta
+  Paso 8. Escribir tus propias reglas
+  Paso 9. Cómo funciona el código por dentro
+  Paso 10. Guion de la presentación con los comandos en orden
+  Paso 11. Lista de lo que falta para cerrar el proyecto
+  Anexo A. Diferencias con el documento (para contestar si preguntan)
+  Anexo B. Problemas comunes
+
+
+------------------------------------------------------------------------------
+PASO 1. QUÉ HAY EN LA CARPETA
+------------------------------------------------------------------------------
+
+NetGuard/
+├── netguard.py            Programa principal: une todas las fases (sección 14)
+├── compilador/
+│   ├── lexer.py           Analizador léxico, tokens (sección 7.2)
+│   ├── parser.py          Gramática LALR(1) + reglas semánticas (7.3 y 8)
+│   ├── semantic.py        Tipos, pila semántica y árboles (8.2, 9 y 10)
+│   ├── symtable.py        Tabla de símbolos por ámbitos (11)
+│   ├── codegen.py         Cuádruplas, relleno de saltos y tripletas (12)
+│   ├── optimizer.py       Técnicas de optimización (13)
+│   ├── vm.py              Intérprete / máquina virtual (14)
+│   └── errors.py          Manejador de errores L01…S09…R03 (8.4)
+├── ply/                   Biblioteca PLY 3.11 (ya incluida, no hay que instalarla)
+├── ejemplos/
+│   ├── reglas.ng          El programa de la Fase 1 (sección 12.1)
+│   ├── riesgo.ng          La expresión aritmética de la traza 10.1
+│   ├── puertos.ng         IF anidado, AND y el campo port
+│   ├── optimizacion.ng    Activa TODAS las técnicas de optimización
+│   ├── red_laboratorio.log    Registro de 3 eventos (sección 14.3)
+│   ├── red_laboratorio2.log   Registro de 9 eventos
+│   ├── registro_con_errores.log  Registro con líneas inválidas
+│   └── errores/           Un programa por cada código de error
+├── pruebas.py             41 pruebas automáticas contra el documento
+├── demo.bat / demo.sh     Modo presentación (fase por fase, con pausas)
+├── pruebas.bat / .sh      Ejecuta las pruebas
+└── GUIA_PASO_A_PASO.txt   Este archivo
+
+Archivos .ng = programas escritos en NetGuard.
+Archivos .log = registros de red (un evento por línea, separado por comas).
+
+
+------------------------------------------------------------------------------
+PASO 2. INSTALAR PYTHON
+------------------------------------------------------------------------------
+
+1. Entra a https://www.python.org/downloads/ y descarga Python 3 (3.8 o más
+   nuevo; recomendado 3.11 o superior).
+2. En el instalador de Windows MARCA la casilla "Add python.exe to PATH" y da
+   "Install Now".
+3. Comprueba en una terminal:
+       python --version
+   Si no lo reconoce, prueba:
+       py --version
+   (en ese caso usa "py" en lugar de "python" en todos los comandos).
+
+No necesitas instalar nada más: la biblioteca PLY ya está dentro de la
+carpeta ply/. (Si de todos modos quieres instalarla: pip install ply==3.11)
+
+
+------------------------------------------------------------------------------
+PASO 3. ABRIR UNA TERMINAL EN LA CARPETA
+------------------------------------------------------------------------------
+
+Opción A (Windows): abre la carpeta NetGuard en el Explorador, haz clic en la
+barra de dirección, escribe  cmd  y presiona Enter.
+
+Opción B (VS Code): Archivo > Abrir carpeta > NetGuard, y luego
+Terminal > Nueva terminal.
+
+Opción C (Linux / Mac):  cd ruta/a/NetGuard
+
+Todos los comandos de esta guía se escriben ahí.
+(En Windows puedes usar \ o / en las rutas: ejemplos\reglas.ng)
+
+
+------------------------------------------------------------------------------
+PASO 3B. ABRIR Y EJECUTAR DESDE VISUAL STUDIO CODE
+------------------------------------------------------------------------------
+
+Una sola vez:
+  1. Instala VS Code (https://code.visualstudio.com) y Python (Paso 2).
+  2. Descomprime NetGuard_Proyecto.zip (clic derecho > Extraer todo).
+     No lo abras desde dentro del .zip.
+  3. En VS Code: Archivo > Abrir carpeta... > elige la carpeta NetGuard
+     (la que contiene netguard.py). Si pregunta "¿Confía en los autores?",
+     elige "Sí, confío".
+  4. Abajo a la derecha te ofrecerá instalar la extensión "Python" de
+     Microsoft: dale Instalar. (O ve a Extensiones, Ctrl+Shift+X, y busca
+     "Python".)
+  5. Elige el intérprete: Ctrl+Shift+P > escribe "Python: Select Interpreter"
+     > elige el Python 3 que instalaste.
+
+FORMA 1 · Con F5 (la más cómoda)
+  La carpeta ya trae configuraciones listas (.vscode/launch.json).
+  1. Abre el panel "Ejecutar y depurar" (Ctrl+Shift+D, o el ícono de ▶ con
+     un bichito en la barra izquierda).
+  2. Arriba, en la lista desplegable, elige una opción:
+       1. NetGuard: ejecutar reglas.ng
+       2. NetGuard: presentación (todas las fases con pausas)
+       3. NetGuard: ejecutar el archivo .ng que tengo abierto
+       4. NetGuard: todas las fases del .ng abierto (--todo)
+       5. NetGuard: optimización y comparación
+       6. NetGuard: mostrar errores (varios_errores.ng)
+       7. NetGuard: pruebas automáticas (41 pruebas)
+  3. Presiona F5 (o el botón ▶ verde). La salida aparece en la TERMINAL de
+     abajo. En la opción 2 presiona Enter en la terminal para avanzar.
+  Las opciones 3 y 4 usan el archivo que tengas abierto en el editor:
+  abre primero un .ng (por ejemplo ejemplos/puertos.ng) y luego F5.
+
+FORMA 2 · Escribiendo los comandos en la terminal de VS Code
+  1. Terminal > Nueva terminal (o Ctrl+ñ / Ctrl+`).
+  2. La terminal ya se abre en la carpeta NetGuard. Escribe, por ejemplo:
+         python netguard.py ejemplos/reglas.ng
+         python netguard.py ejemplos/reglas.ng --tabla --cuadruplos
+         python pruebas.py
+     (si "python" no funciona, usa "py")
+  Todos los comandos de los Pasos 4 a 10 funcionan igual aquí.
+
+FORMA 3 · Botón ▶ "Run Python File"
+  Abre netguard.py y presiona el ▶ de arriba a la derecha: NO sirve solo,
+  porque netguard.py necesita que le digas qué programa .ng ejecutar.
+  Usa la Forma 1 o la 2. (Con pruebas.py el botón ▶ sí funciona.)
+
+Para editar las reglas: abre ejemplos/reglas.ng, cambia por ejemplo
+"maxAttempts : int = 5" por 10, guarda (Ctrl+S) y vuelve a presionar F5.
+
+Si la consola muestra caracteres raros (Ã³), escribe en la terminal:
+    chcp 65001
+y vuelve a ejecutar.
+
+
+------------------------------------------------------------------------------
+PASO 4. CORRER LAS PRUEBAS AUTOMÁTICAS
+------------------------------------------------------------------------------
+
+    python pruebas.py          (o doble clic en pruebas.bat)
+
+Debe terminar con:
+
+    Resultado: 41 de 41 pruebas correctas.
+
+Qué comprueban: que las cuádruplas, tripletas, tabla de símbolos, optimización
+y reporte son IGUALES a las tablas del documento, que la optimización no
+cambia el resultado, y que cada archivo de ejemplos/errores produce su error.
+Esto es muy bueno para mostrar en la presentación: demuestra que el diseño y
+el programa coinciden.
+
+
+------------------------------------------------------------------------------
+PASO 5. EJECUTAR EL PRIMER PROGRAMA
+------------------------------------------------------------------------------
+
+    python netguard.py ejemplos/reglas.ng
+
+Salida esperada:
+
+    [ALERTA]  Evento sospechoso - origen 192.168.1.10
+    [ALERTA]  Evento sospechoso - origen 192.168.1.25
+    [MARCADO] 10.0.0.4 -> normal
+    Eventos analizados: 3 | Alertas: 2 | Marcados: 1
+    Reporte guardado en reporte.txt
+
+Para usar otro archivo de registro sin cambiar el programa:
+
+    python netguard.py ejemplos/reglas.ng ejemplos/red_laboratorio2.log
+
+(el segundo archivo sustituye al que dice el LOAD).
+
+
+------------------------------------------------------------------------------
+PASO 6. VER CADA FASE DEL COMPILADOR
+------------------------------------------------------------------------------
+
+Agrega una o varias opciones al comando:
+
+  Opción          Qué muestra                                  Sección doc.
+  --------------  -------------------------------------------  ------------
+  --tokens        Tabla de tokens (línea, token, lexema)       7.2
+  --arbol         Árboles de expresiones + notación postfija   9
+  --traza         Pila semántica paso a paso (4 pilas)         10
+  --tabla         Tabla de símbolos y de constantes            11
+  --cuadruplos    Código intermedio en cuádruplas              12.3
+  --tripletas     El mismo código en tripletas                 12.4
+  --optimizado    Cuádruplas optimizadas + qué se cambió       13
+  --comparar      Cuántos cuádruplos se ejecutan con/sin opt.  13
+  --direcciones   Agrega las direcciones virtuales (x@1000)    11.1
+  --todo          Todo lo anterior
+  --presentacion  Todo, una fase a la vez con pausa (Enter)
+  --sin-optimizar Ejecuta el código original
+  --no-ejecutar   Solo compila
+  --help          Lista de opciones
+
+Ejemplos:
+    python netguard.py ejemplos/reglas.ng --tokens
+    python netguard.py ejemplos/reglas.ng --tabla --cuadruplos
+    python netguard.py ejemplos/riesgo.ng --traza
+    python netguard.py ejemplos/optimizacion.ng --optimizado --comparar
+    python netguard.py ejemplos/reglas.ng --todo > salida.txt
+          (guarda TODO en un archivo de texto para revisarlo o imprimirlo)
+
+
+------------------------------------------------------------------------------
+PASO 7. MOSTRAR LOS ERRORES QUE DETECTA
+------------------------------------------------------------------------------
+
+Cada archivo de ejemplos/errores provoca un error distinto:
+
+  Archivo                         Código  Qué demuestra
+  ------------------------------  ------  -----------------------------------
+  L01_caracter_invalido.ng        L01     Símbolo que no existe ($)
+  L02_cadena_sin_cerrar.ng        L02     Falta la comilla de cierre
+  P01_sintaxis.ng                 P01     LET n : int = = 5
+  P02_falta_end.ng                P02     Un IF sin su END
+  S01_no_declarada.ng             S01     x = 3 sin LET
+  S02_redeclaracion.ng            S02     Dos LET suspicious
+  S03_asignacion.ng               S03     LET n : int = 2.5
+  S04_operacion.ng                S04     event.sourceIP * 2
+  S05_condicion.ng                S05     IF event.port
+  S06_solo_lectura.ng             S06     maxAttempts = 10
+  S07_campo.ng                    S07     event.destIP
+  S08_ip_rango.ng                 S08     192.168.1.300
+  S09_no_coleccion.ng             S09     FOR EACH e IN maxAttempts
+  R01_archivo_no_existe.ng        R01     El .log no existe (al ejecutar)
+  R03_division_cero.ng            R03     División entre cero (al ejecutar)
+  varios_errores.ng               5 errores a la vez
+
+Ejemplo:
+    python netguard.py ejemplos/errores/S06_solo_lectura.ng
+    → [S06] Línea 4: 'maxAttempts' es de solo lectura (global)
+      Se encontraron 1 error(es). El programa no se ejecuta.
+
+Y para el registro con líneas inválidas (advertencias R02):
+    python netguard.py ejemplos/reglas.ng ejemplos/registro_con_errores.log
+
+
+------------------------------------------------------------------------------
+PASO 8. ESCRIBIR TUS PROPIAS REGLAS
+------------------------------------------------------------------------------
+
+1. Crea un archivo de texto con extensión .ng (por ejemplo mis_reglas.ng) en
+   la carpeta ejemplos. Usa el Bloc de notas o VS Code, guardado en UTF-8.
+2. Estructura obligatoria, en este orden:
+       LIMIT ...        (0 o más umbrales globales)
+       LOAD EVENTS FROM "archivo.log" AS nombre   (1 o más)
+       sentencias       (FOR EACH, IF, LET, asignaciones, ALERT, MARK)
+3. Reglas rápidas:
+   * Palabras reservadas en MAYÚSCULAS; tipos y true/false en minúsculas.
+   * Cada IF y cada FOR EACH cierra con END.
+   * Comentarios con #.
+   * Campos de event: sourceIP, eventType, port, failedAttempts, trafficMB, status.
+4. Ejecuta:  python netguard.py ejemplos/mis_reglas.ng
+
+Formato del .log (primera línea opcional de encabezado):
+    sourceIP,eventType,port,failedAttempts,trafficMB,status
+    192.168.1.10,login_failed,22,7,1.2,pendiente
+
+Idea para la demo en vivo: pide a la profesora un umbral (por ejemplo
+"maxAttempts = 10") y cámbialo en el programa frente a ella.
+
+
+------------------------------------------------------------------------------
+PASO 9. CÓMO FUNCIONA EL CÓDIGO POR DENTRO
+------------------------------------------------------------------------------
+
+Flujo (netguard.py):
+  1. Lee el .ng
+  2. compilar(): lexer → parser (con semántica, tabla de símbolos y codegen)
+  3. Si hay errores: los imprime y NO ejecuta
+  4. optimizar(): mejora las cuádruplas
+  5. MaquinaVirtual.ejecutar(): corre las cuádruplas sobre el .log
+  6. Escribe reporte.txt
+
+lexer.py (PLY lex)
+  Cada token es una expresión regular. Ej.: t_ID = [a-zA-Z_][a-zA-Z0-9_]*.
+  Las palabras reservadas se buscan en un diccionario después de reconocer un
+  ID. IP_LIT se revisa antes que FLOAT_LIT para que 192.168.1.10 no se lea
+  como 192.168 + .1 + .10.
+
+parser.py (PLY yacc, LALR(1))
+  Cada función p_algo tiene en su docstring la producción de la gramática y
+  en su cuerpo la REGLA SEMÁNTICA. Ejemplo:
+      def p_decl_local(p):
+          "decl_local : LET ID ':' tipo '=' expr"
+          ... revisa S02 y S03, inserta en la tabla, genera (=, valor, —, ID)
+  PLY construye la tabla LALR (122 estados, 0 conflictos) y llama a cada
+  función cuando REDUCE esa producción, es decir, en postorden.
+  Los no terminales "marcadores" (op_suma, op_mult, encabezado_if,
+  encabezado_else, encabezado_for…) sirven para ejecutar una acción en el
+  momento exacto: apilar un operador apenas se lee, o generar el GOTOF justo
+  después de la condición del IF (acciones #1 a #5 de la sección 8.3).
+
+semantic.py
+  resultado(op, t1, t2) = la tabla de compatibilidad 8.2.
+  PilaSemantica tiene POper, PTipos, POptr y PSaltos; operacion_binaria()
+  saca el operador y dos operandos, revisa tipos, pide un temporal y genera
+  la cuádrupla. Guarda la traza que se ve con --traza.
+
+symtable.py
+  Pila de diccionarios (tablas hash), uno por ámbito. buscar() recorre del
+  tope al fondo. Asigna direcciones: 1000 globales, 2000 locales,
+  3000 temporales, 4000 constantes, 5000 colecciones.
+
+codegen.py
+  Lista de cuádruplas numeradas desde 1. rellenar() hace el backpatching de
+  los saltos. a_tripletas() convierte a tripletas.
+
+optimizer.py
+  Repite las pasadas hasta que nada cambia: plegado y propagación de
+  constantes, simplificación algebraica, subexpresiones comunes, código
+  muerto, salto a salto, código inalcanzable; además reducción de fuerza y
+  movimiento de código invariante. Al final renumera y corrige los saltos.
+
+vm.py
+  Ejecuta cuádrupla por cuádrupla con un contador de programa (pc). La
+  memoria es un diccionario {dirección: valor}. FE_INIT/FE_NEXT recorren la
+  lista de eventos; ALERT y MARK escriben el reporte.
+
+
+------------------------------------------------------------------------------
+PASO 10. GUION DE LA PRESENTACIÓN (CON COMANDOS)
+------------------------------------------------------------------------------
+
+Antes: abre la terminal en la carpeta y agranda la letra (Ctrl + rueda del
+ratón o propiedades de la consola). Ten abierto también el documento Word.
+
+ 1. (1 min) Qué es NetGuard y el problema.             [diapositiva/Word]
+ 2. (1 min) Mostrar el programa:
+        type ejemplos\reglas.ng          (Windows)
+        cat ejemplos/reglas.ng           (Linux/Mac)
+ 3. (1 min) Léxico:
+        python netguard.py ejemplos/reglas.ng --tokens --no-ejecutar
+ 4. (1 min) Árbol de la condición del IF:
+        python netguard.py ejemplos/reglas.ng --arbol --no-ejecutar
+ 5. (2 min) Pila semántica con la expresión de la sección 10.1:
+        python netguard.py ejemplos/riesgo.ng --traza --no-ejecutar
+ 6. (1 min) Tabla de símbolos:
+        python netguard.py ejemplos/reglas.ng --tabla --no-ejecutar
+ 7. (2 min) Cuádruplas y tripletas (comparar con la tabla 12.3 del Word):
+        python netguard.py ejemplos/reglas.ng --cuadruplos --tripletas --no-ejecutar
+ 8. (2 min) Optimización 17 → 13 y comparación:
+        python netguard.py ejemplos/reglas.ng --optimizado --comparar
+ 9. (1 min) Todas las técnicas:
+        python netguard.py ejemplos/optimizacion.ng --optimizado --no-ejecutar
+10. (1 min) Errores:
+        python netguard.py ejemplos/errores/varios_errores.ng
+11. (30 s) Pruebas:  python pruebas.py   → 41 de 41
+12. Cierre.
+
+Atajo: demo.bat (doble clic) recorre todas las fases de reglas.ng con pausas.
+
+Reparto sugerido entre los 4 integrantes:
+  Integrante 1: pasos 1-3 (lenguaje, alcance, léxico)
+  Integrante 2: pasos 4-6 (gramática, árbol, pila semántica, tabla)
+  Integrante 3: pasos 7-9 (código intermedio y optimización)
+  Integrante 4: pasos 10-12 (errores, pruebas, arquitectura y cierre)
+
+
+------------------------------------------------------------------------------
+PASO 11. LISTA DE LO QUE FALTA PARA CERRAR EL PROYECTO
+------------------------------------------------------------------------------
+
+[ ] Copiar la carpeta a la laptop de la presentación y correr pruebas.py
+    ahí (un día antes). Si "python" no funciona, usar "py".
+[ ] Cada integrante corre al menos una vez los comandos del Paso 10.
+[ ] Revisar con la profesora si pide entregar un documento de la fase de
+    implementación. Normalmente lleva: capturas de cada fase (tokens, árbol,
+    traza, tabla, cuádruplas, optimización, ejecución, errores), la tabla de
+    pruebas (41/41) y un manual de usuario (este Paso 6 y 8).
+    Tip: "python netguard.py ejemplos/reglas.ng --todo > salida.txt" saca todo
+    el texto para pegarlo en el documento.
+[ ] Subir el código al repositorio o a Classroom si lo piden (comprimir la
+    carpeta NetGuard completa, con ply/ incluida).
+[ ] Preparar 2 o 3 respuestas sobre el código (Anexo A y Paso 9).
+[ ] (Opcional) Una regla propia del equipo en ejemplos/ para la demo.
+
+
+------------------------------------------------------------------------------
+ANEXO A. DIFERENCIAS CON EL DOCUMENTO (PARA CONTESTAR SI PREGUNTAN)
+------------------------------------------------------------------------------
+
+1. La gramática del código tiene no terminales "marcadores" extra
+   (op_suma, encabezado_if, etc.). Aceptan EXACTAMENTE el mismo lenguaje que
+   la gramática 7.3; solo sirven para ejecutar las acciones #1-#5 y apilar
+   operadores en el momento correcto.
+2. En la traza, la columna "Símbolo" muestra el token que el parser estaba
+   leyendo (lookahead) cuando hizo la acción. En un parser ascendente el
+   operador se saca al ver el siguiente token, por eso a veces aparece IF,
+   ALERT o la variable de la siguiente línea en lugar de "fin".
+3. En riesgo.ng los temporales empiezan en t2 porque t1 lo usa FE_NEXT del
+   ciclo; en el documento la expresión aparecía sola.
+4. El optimizador tiene dos técnicas pequeñas adicionales: "salto al
+   siguiente" (GOTO a la instrucción que sigue) y plegado de GOTOF con
+   condición constante.
+5. La propagación de constantes también se aplica a un LET que se asigna una
+   sola vez (además de los LIMIT).
+6. Limitación conocida: no se elimina una asignación que se sobrescribe antes
+   de leerse (por ejemplo LET riesgo = 0.0 seguido de riesgo = ...). Para eso
+   haría falta análisis de variables vivas; queda como mejora.
+7. Códigos de error agregados al diseño: L01, L02 (léxicos), P01, P02
+   (sintácticos) y R01, R02, R03 (ejecución). Los S01-S09 son los del
+   documento.
+
+
+------------------------------------------------------------------------------
+ANEXO B. PROBLEMAS COMUNES
+------------------------------------------------------------------------------
+
+"python no se reconoce como un comando"
+    → Usa py en lugar de python, o reinstala Python marcando "Add to PATH".
+
+Se ven caracteres raros (Ã³ en lugar de ó) en la consola de Windows
+    → Ejecuta primero:  chcp 65001
+      (demo.bat y pruebas.bat ya lo hacen) o usa Windows Terminal / VS Code.
+
+[R01] no se encontró el archivo de registro
+    → La ruta del LOAD es relativa a la carpeta del .ng. Revisa el nombre o
+      pásalo como segundo argumento.
+
+[P01] token inesperado 'END'
+    → Casi siempre falta algo antes: una comilla, un FROM en ALERT o un AS en
+      MARK. Revisa la línea anterior.
+
+Las tablas se ven cortadas
+    → Maximiza la ventana o guarda la salida en archivo:  ... > salida.txt

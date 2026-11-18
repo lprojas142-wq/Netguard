@@ -1,0 +1,11 @@
+# Registro de prueba más grande (líneas con # se ignoran)
+sourceIP,eventType,port,failedAttempts,trafficMB,status
+192.168.1.10,login_failed,22,7,1.2,pendiente
+192.168.1.11,login_ok,22,0,3.5,pendiente
+192.168.1.25,transfer,443,0,820.5,pendiente
+10.0.0.4,login_ok,22,0,0.4,pendiente
+10.0.0.7,telnet,23,0,0.1,pendiente
+172.16.0.9,login_failed,22,12,0.3,pendiente
+172.16.0.12,login_failed,3389,3,0.2,pendiente
+192.168.1.50,transfer,80,0,1250.0,pendiente
+10.0.0.99,login_failed,21,5,0.0,pendiente

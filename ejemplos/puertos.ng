@@ -1,0 +1,15 @@
+# IF anidado y comparación de enteros con el campo port
+LIMIT maxAttempts : int = 5
+LIMIT puertoTelnet : int = 23
+LOAD EVENTS FROM "red_laboratorio2.log" AS traffic
+
+FOR EACH event IN traffic
+    IF event.port == puertoTelnet
+        ALERT "Acceso a puerto restringido" FROM event.sourceIP
+    ELSE
+        IF event.failedAttempts >= maxAttempts AND event.eventType == "login_failed"
+            ALERT "Posible fuerza bruta" FROM event.sourceIP
+            MARK event AS "sospechoso"
+        END
+    END
+END

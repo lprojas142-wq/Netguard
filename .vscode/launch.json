@@ -1,0 +1,76 @@
+{
+    // Configuraciones para ejecutar NetGuard con F5 (o con el botón ▶ de "Ejecutar y depurar").
+    // Elige la que quieras en la lista de arriba del panel "Ejecutar y depurar".
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "1. NetGuard: ejecutar reglas.ng",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/netguard.py",
+            "args": ["ejemplos/reglas.ng"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "env": { "PYTHONIOENCODING": "utf-8" }
+        },
+        {
+            "name": "2. NetGuard: presentación (todas las fases con pausas)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/netguard.py",
+            "args": ["ejemplos/reglas.ng", "--presentacion"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "env": { "PYTHONIOENCODING": "utf-8" }
+        },
+        {
+            "name": "3. NetGuard: ejecutar el archivo .ng que tengo abierto",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/netguard.py",
+            "args": ["${file}"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "env": { "PYTHONIOENCODING": "utf-8" }
+        },
+        {
+            "name": "4. NetGuard: todas las fases del .ng abierto (--todo)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/netguard.py",
+            "args": ["${file}", "--todo"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "env": { "PYTHONIOENCODING": "utf-8" }
+        },
+        {
+            "name": "5. NetGuard: optimización y comparación",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/netguard.py",
+            "args": ["ejemplos/optimizacion.ng", "--optimizado", "--comparar"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "env": { "PYTHONIOENCODING": "utf-8" }
+        },
+        {
+            "name": "6. NetGuard: mostrar errores (varios_errores.ng)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/netguard.py",
+            "args": ["ejemplos/errores/varios_errores.ng"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "env": { "PYTHONIOENCODING": "utf-8" }
+        },
+        {
+            "name": "7. NetGuard: pruebas automáticas (41 pruebas)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/pruebas.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "env": { "PYTHONIOENCODING": "utf-8" }
+        }
+    ]
+}

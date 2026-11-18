@@ -1,0 +1,14 @@
+# Expresión aritmética de la sección 10.1 (traza de la pila semántica)
+LIMIT riesgoMaximo : float = 8.0
+LOAD EVENTS FROM "red_laboratorio.log" AS traffic
+
+FOR EACH event IN traffic
+    LET riesgo : float = 0.0
+    riesgo = event.failedAttempts * 2 + event.trafficMB / 100
+
+    IF riesgo >= riesgoMaximo
+        ALERT "Riesgo alto" FROM event.sourceIP
+    ELSE
+        MARK event AS "riesgo bajo"
+    END
+END

@@ -1,0 +1,5 @@
+LIMIT gw : ip = 192.168.1.300
+LOAD EVENTS FROM "../red_laboratorio.log" AS traffic
+FOR EACH event IN traffic
+    MARK event AS "normal"
+END
